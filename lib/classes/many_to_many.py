@@ -1,16 +1,14 @@
 class Article:
-    all = []  # List to store all articles globally
+    all = []
 
     def __init__(self, author, magazine, title):
-        # Validate the title length
+
         if not (5 <= len(title) <= 50):
             print("Error: Title must be between 5 and 50 characters")
-            return  # Exit the constructor early if validation fails
+            return  
         self.author = author
         self.magazine = magazine
         self._title = title
-        
-        # Append article to magazine's and author's article lists
         magazine._articles.append(self)
         author._articles.append(self)
         Article.all.append(self)
@@ -26,10 +24,10 @@ class Article:
 
 class Author:
     def __init__(self, name):
-        # Validate the name length
+
         if not isinstance(name, str) or len(name) == 0:
             print("Error: Author's name must be a non-empty string")
-            return  # Exit the constructor early if validation fails
+            return  
         self._name = name
         self._articles = []
 
@@ -55,19 +53,18 @@ class Author:
 
 
 class Magazine:
-    all = []  # Store all magazine instances
+    all = []  
 
     def __init__(self, name, category):
-        # Validate the name and category
         if len(name) < 2 or len(name) > 16:
             print("Error: Magazine name must be between 2 and 16 characters")
-            return  # Exit the constructor early if validation fails
+            return  
         if not isinstance(name, str):
             print("Error: Magazine name must be a string")
-            return  # Exit if name is not a string
+            return  
         if len(category) == 0:
             print("Error: Category cannot be empty")
-            return  # Exit the constructor early if validation fails
+            return  
         self._name = name
         self._category = category
         self._articles = []
