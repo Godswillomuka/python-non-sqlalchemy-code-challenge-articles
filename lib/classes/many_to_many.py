@@ -1,38 +1,126 @@
 class Article:
+    all = []  # List to store all articles globally
+
     def __init__(self, author, magazine, title):
+        # Validate the title length
+        if not (5 <= len(title) <= 50):
+            print("Error: Title must be between 5 and 50 characters")
+            return  # Exit the constructor early if validation fails
         self.author = author
         self.magazine = magazine
-        self.title = title
+        self._title = title
         
+        # Append article to magazine's and author's article lists
+        magazine._articles.append(self)
+        author._articles.append(self)
+        Article.all.append(self)
+
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        print("Error: Title cannot be changed after initialization")
+
+
 class Author:
     def __init__(self, name):
-        self.name = name
+        # Validate the name length
+        if not isinstance(name, str) or len(name) == 0:
+            print("Error: Author's name must be a non-empty string")
+            return  # Exit the constructor early if validation fails
+        self._name = name
+        self._articles = []
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        print("Error: Author's name cannot be changed once set")
 
     def articles(self):
-        pass
+        return self._articles
 
     def magazines(self):
-        pass
+        return list(set(article.magazine for article in self._articles))
 
     def add_article(self, magazine, title):
-        pass
+        return Article(self, magazine, title)
 
     def topic_areas(self):
-        pass
+        return list(set(article.magazine.category for article in self._articles)) if self._articles else None
+
 
 class Magazine:
+    all = []  # Store all magazine instances
+
     def __init__(self, name, category):
-        self.name = name
-        self.category = category
+        # Validate the name and category
+        if len(name) < 2 or len(name) > 16:
+            print("Error: Magazine name must be between 2 and 16 characters")
+            return  # Exit the constructor early if validation fails
+        if not isinstance(name, str):
+            print("Error: Magazine name must be a string")
+            return  # Exit if name is not a string
+        if len(category) == 0:
+            print("Error: Category cannot be empty")
+            return  # Exit the constructor early if validation fails
+        self._name = name
+        self._category = category
+        self._articles = []
+        Magazine.all.append(self)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if not isinstance(value, str):
+            print("Error: Name must be a string")
+            return
+        if len(value) < 2 or len(value) > 16:
+            print("Error: Magazine name must be between 2 and 16 characters")
+            return
+        self._name = value
+
+    @property
+    def category(self):
+        return self._category
+
+    @category.setter
+    def category(self, value):
+        if not isinstance(value, str):
+            print("Error: Category must be a string")
+            return
+        if value == "":
+            print("Error: Category cannot be empty")
+            return
+        self._category = value
 
     def articles(self):
-        pass
+        return self._articles
 
     def contributors(self):
-        pass
+        return list(set(article.author for article in self._articles))
 
     def article_titles(self):
-        pass
+        return [article.title for article in self._articles] if self._articles else None
 
     def contributing_authors(self):
-        pass
+        if not self._articles:
+            return None
+        authors_count = {}
+        for article in self._articles:
+            authors_count[article.author] = authors_count.get(article.author, 0) + 1
+        contributing_authors = [author for author, count in authors_count.items() if count > 2]
+        return contributing_authors if contributing_authors else None
+
+    @classmethod
+    def top_publisher(cls):
+        if not cls.all:
+            return None
+        return max(cls.all, key=lambda magazine: len(magazine._articles), default=None)
